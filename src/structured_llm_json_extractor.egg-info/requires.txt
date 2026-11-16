@@ -1,6 +1,9 @@
 pydantic<3,>=2.7
 python-dotenv<2,>=1.0
 
+[chat]
+streamlit<2,>=1.35
+
 [dev]
 pytest<9,>=8
 

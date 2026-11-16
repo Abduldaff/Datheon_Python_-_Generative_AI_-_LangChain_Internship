@@ -22,6 +22,10 @@ rag = [
   "greenlet>=3.1.1,<3.2; python_version < '3.10'",
   "pypdf>=5,<7",
 ]
+chat = [
+  "openai>=1.30,<3",
+  "streamlit>=1.35,<2",
+]
 dev = ["pytest>=8,<9"]
 
 [tool.pytest.ini_options]

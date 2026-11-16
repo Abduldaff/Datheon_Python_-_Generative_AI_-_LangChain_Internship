@@ -1,14 +1,16 @@
 # Structured LLM Prompt Pipeline, JSON Extractor & Document Q&A
 
-A Python CLI for extracting validated JSON from invoices or resumes and answering questions from indexed PDF or text documents.
+A Python CLI for extracting validated JSON from invoices or resumes, answering questions from indexed PDF or text documents, running local autonomous tool workflows, and serving a lightweight Streamlit chatbot.
 
 ## What it demonstrates
 
-- Parameterized, task-specific prompt templates with a few-shot example
-- Pydantic schemas with required fields and field-level validation
-- An OpenAI structured-output provider and an offline deterministic provider
-- A Retrieval-Augmented Generation (RAG) pipeline using ChromaDB and OpenAI embeddings
-- PDF/text loading, recursive chunking, persistent local indexing, and source-page citations
+- Task 1: parameterized, task-specific prompt templates with a few-shot example
+- Task 1: Pydantic schemas with required fields and field-level validation
+- Task 1: an OpenAI structured-output provider and an offline deterministic provider
+- Task 2: a Retrieval-Augmented Generation (RAG) pipeline using ChromaDB and OpenAI embeddings
+- Task 2: PDF/text loading, recursive chunking, persistent local indexing, and source-page citations
+- Task 3: a lightweight autonomous agent that can calculate, read files, and inspect the workspace
+- Task 4: an interactive Streamlit chatbot with conversation memory
 - Helpful validation errors and machine-readable JSON output
 - Sample documents and automated tests
 
@@ -68,11 +70,49 @@ Index documents first, then ask questions in later runs:
 
 Use `--persist-directory PATH` to select a different local index, and `--top-k N` to control how many chunks are retrieved. OpenAI answers are instructed to rely only on retrieved excerpts and cite them; the CLI also prints the source file and page for each retrieved excerpt. PDF page citations are one-based; text files are treated as page 1. OpenAI mode sends document content to OpenAI for embeddings and question answering; offline mode processes it locally. The local vector index is ignored by Git.
 
+## Task 3: Multi-Tool Autonomous Agent
+
+The project includes a lightweight local agent that can interpret arithmetic and file-based requests without external APIs.
+
+```powershell
+pip install -e ".[dev]"
+python -m extractor agent "Add 12 and 8, then multiply by 2"
+python -m extractor agent "Read file samples/invoice.txt"
+```
+
+This demonstrates a simple tool-calling loop: calculation, file listing, and local file reading.
+
+## Task 4: Full-Stack AI Chatbot with Streamlit
+
+Install the chat extra and launch the app:
+
+```powershell
+pip install -e ".[dev,chat]"
+# Configure OPENAI_API_KEY and OPENAI_MODEL in the project .env file.
+python -m extractor chatbot
+# or, from the repo root:
+streamlit run src/extractor/chatbot.py
+```
+
+The chatbot sends conversation history to the configured model and streams generated tokens into the page. With `CHAT_PROVIDER=openai`, a valid API key and available API credits are required.
+
+To chat without API credits, install [Ollama](https://ollama.com/download), download a local model, and select it in `.env`:
+
+```powershell
+ollama pull llama3.2
+# Set CHAT_PROVIDER=ollama in .env, then restart the app.
+python -m extractor chatbot
+```
+
+Ollama must be running locally (by default at `http://localhost:11434`). Change `OLLAMA_MODEL` to use another model you have downloaded. Provider, connection, and configuration failures are shown in the chat instead of being replaced with canned fallback responses.
+
 ## Usage
 
 ```text
 python -m extractor INPUT_FILE --document-type {invoice,resume} [--provider offline|openai] [--output result.json]
 python -m extractor rag [PDF_OR_TXT ...] [--question QUESTION] [--persist-directory PATH] [--top-k N] [--provider openai|offline]
+python -m extractor agent "YOUR TASK"
+python -m extractor chatbot
 ```
 
 The original extraction command defaults to offline mode and does not send content anywhere. RAG defaults to OpenAI; use `--provider offline` to keep document processing local.

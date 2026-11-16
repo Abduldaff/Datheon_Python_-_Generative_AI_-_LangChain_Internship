@@ -30,10 +30,20 @@ def extraction_main() -> int:
 
 
 def main() -> int:
-    if len(sys.argv) > 1 and sys.argv[1] == "rag":
-        from extractor.rag import rag_main
+    if len(sys.argv) > 1:
+        command = sys.argv[1]
+        if command == "rag":
+            from extractor.rag import rag_main
 
-        return rag_main(sys.argv[2:])
+            return rag_main(sys.argv[2:])
+        if command == "agent":
+            from extractor.agent import agent_main
+
+            return agent_main(sys.argv[2:])
+        if command == "chatbot":
+            from extractor.chatbot import main as chatbot_main
+
+            return chatbot_main(sys.argv[2:])
     return extraction_main()
 
 
