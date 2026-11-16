@@ -99,12 +99,12 @@ The chatbot sends conversation history to the configured model and streams gener
 To chat without API credits, install [Ollama](https://ollama.com/download), download a local model, and select it in `.env`:
 
 ```powershell
-ollama pull llama3.2
+ollama pull llama3.2:1b
 # Set CHAT_PROVIDER=ollama in .env, then restart the app.
 python -m extractor chatbot
 ```
 
-Ollama must be running locally (by default at `http://localhost:11434`). Change `OLLAMA_MODEL` to use another model you have downloaded. Provider, connection, and configuration failures are shown in the chat instead of being replaced with canned fallback responses.
+Ollama must be running locally (by default at `http://localhost:11434`). The smaller `llama3.2:1b` model is the default for faster local replies on CPU. The app streams responses, keeps the model warm for 15 minutes, sends the complete visible conversation history, and configures an 8K-token context window. Very long conversations can still exceed the model's context capacity. Change `OLLAMA_MODEL` to use another model you have downloaded. Provider, connection, and configuration failures are shown in the chat instead of being replaced with canned fallback responses.
 
 ## Usage
 
